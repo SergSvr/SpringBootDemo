@@ -16,9 +16,10 @@ import java.time.LocalDateTime;
 public class ServiceRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
-
+    Long id;
     LocalDateTime date;
     Integer odometer;
     String operations;
+
+    Long vehicleId;
 }

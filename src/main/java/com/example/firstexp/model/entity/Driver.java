@@ -27,11 +27,11 @@ public class Driver {
     String surname;
     @Column
     String email;
-    @Column(name = "amnd_state")
+    @Column(name = "record_state")
     @Enumerated(EnumType.STRING)
     Status status;
 
-    @Column(name = "amnd_prev")
+    @Column(name = "prev_record")
     Long prev;
 
     @CreationTimestamp
@@ -39,7 +39,4 @@ public class Driver {
     LocalDateTime createdAt;
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Messages> messages;
 }

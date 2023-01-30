@@ -23,7 +23,7 @@ public class Vehicle{
 
     @Column(unique = true)
     String vin;
-    @OneToOne
+    @OneToOne(cascade =CascadeType.MERGE)
     VehicleType vehicleType;
     @Column(name="vehicle_class")
     @Enumerated(EnumType.STRING)
@@ -34,6 +34,6 @@ public class Vehicle{
     LocalDateTime createdAt;
     @Column(name = "updated_at")
     LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vehicleId", cascade = CascadeType.ALL)
     List<ServiceRecord> serviceRecord;
 }

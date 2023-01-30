@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ServiceRecordDTO {
-    LocalDateTime date;
+    String vin;
     Integer odometer;
+    LocalDateTime date;
     String operations;
 }

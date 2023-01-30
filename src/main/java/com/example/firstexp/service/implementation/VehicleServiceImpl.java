@@ -4,11 +4,12 @@ import com.example.firstexp.exceptions.CustomException;
 import com.example.firstexp.model.dto.VehicleDTO;
 import com.example.firstexp.model.entity.Driver;
 import com.example.firstexp.model.entity.Vehicle;
+import com.example.firstexp.model.entity.VehicleType;
 import com.example.firstexp.model.repository.DriverRepository;
 import com.example.firstexp.model.repository.VehicleRepository;
 import com.example.firstexp.model.repository.VehicleTypeRepository;
-import com.example.firstexp.service.VehicleService;
 import com.example.firstexp.service.DriverService;
+import com.example.firstexp.service.VehicleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +32,14 @@ public class VehicleServiceImpl implements VehicleService {
     public VehicleDTO createVehicle(VehicleDTO vehicleDTO) {
         vehicleRepository.findByVin(vehicleDTO.getVin()).ifPresent(
                 driver -> {
-                    log.warn("Авто с данным VIN существует");
                     throw new CustomException("Авто с данным VIN существует", HttpStatus.BAD_REQUEST);
                 }
         );
         Vehicle vehicle = mapper.convertValue(vehicleDTO, Vehicle.class);
-        vehicleTypeRepository.save(vehicle.getVehicleType());
+        VehicleType temp = vehicleTypeRepository.findVehicleTypeByManufacturerAndModel(vehicleDTO.getVehicleType().getManufacturer(), vehicleDTO.getVehicleType().getModel())
+                .orElse(vehicleDTO.getVehicleType());
+        vehicle.setVehicleType(temp);
+        vehicleTypeRepository.save(temp);
         Vehicle save = vehicleRepository.save(vehicle);
         return mapper.convertValue(save, VehicleDTO.class);
     }
@@ -60,7 +63,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public void delete(String vin) {
         Vehicle vehicle = getVehicle(vin);
-        Driver driver =  driverRepository.findByVehicleListContaining(vehicle).
+        Driver driver = driverRepository.findByVehicleListContaining(vehicle).
                 orElseThrow(() -> new CustomException("Водитель для авто не найден", HttpStatus.NOT_FOUND));
         driver.getVehicleList().remove(vehicle);
         driverRepository.save(driver);

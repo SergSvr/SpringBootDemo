@@ -13,13 +13,16 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "messages")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Messages {
+public class Message {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-
+    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false)
     LocalDateTime date;
-    String sender;
+    String sentFrom;
+    String sentTo;
     String text;
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    Boolean status;
 
 }

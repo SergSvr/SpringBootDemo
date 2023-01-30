@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageDTO {
     LocalDateTime date;
-    String sender;
+    String sentFrom;
+    String sentTo;
     String text;
 }

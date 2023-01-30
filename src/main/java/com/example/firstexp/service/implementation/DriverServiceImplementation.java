@@ -28,12 +28,10 @@ public class DriverServiceImplementation implements DriverService {
             InternetAddress emailAddr = new InternetAddress(driverDTO.getEmail());
             emailAddr.validate();
         } catch (Exception ex) {
-            log.warn("Невалидный email");
             throw new CustomException("Невалидный email", HttpStatus.BAD_REQUEST);
         }
         driverRepository.findByEmailAndStatus(driverDTO.getEmail(), Status.A).ifPresent(
                 driver -> {
-                    log.warn("Водитель с таким email уже существует");
                     throw new CustomException("Водитель с таким email уже существует", HttpStatus.BAD_REQUEST);
                 }
         );
