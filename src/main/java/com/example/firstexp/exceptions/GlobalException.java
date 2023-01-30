@@ -6,6 +6,7 @@ import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,6 +37,15 @@ public class GlobalException {
     @ExceptionHandler(CustomException.class)
     public void handleCustomException(HttpServletResponse response, CustomException ex) throws IOException {
         response.sendError(ex.getStatus().value(), ex.getMessage());
+    }
+
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ErrorMessage> handleMissingRef(PropertyReferenceException ex) {
+        String parameter = ex.getMessage();
+
+        log.error( "{} exception", parameter);
+        return ResponseEntity.status(404)
+                .body(new ErrorMessage(String.format("parameter is missing: %s", parameter)));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
