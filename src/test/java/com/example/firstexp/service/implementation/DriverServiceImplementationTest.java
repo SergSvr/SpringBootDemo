@@ -18,7 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DriverServiceImplementationTest {
@@ -36,10 +36,8 @@ public class DriverServiceImplementationTest {
     public void createDriver() {
         DriverDTO driverDTO = new DriverDTO();
         driverDTO.setEmail("123@123.ru");
-        Driver driver = mapper.convertValue(driverDTO, Driver.class);
         when(driverRepository.findByEmailAndStatus(anyString(), any(Status.class))).thenReturn(Optional.empty());
-        // when(driverRepository.save(any(Driver.class))).thenReturn(any(Driver.class));
-        when(driverRepository.save(any(Driver.class))).thenReturn(driver);
+        when(driverRepository.save(any(Driver.class))).thenAnswer(i -> i.getArguments()[0]);
         DriverDTO res = driverServiceImpl.createDriver(driverDTO);
         assertEquals(res.getEmail(), driverDTO.getEmail());
     }
@@ -67,7 +65,7 @@ public class DriverServiceImplementationTest {
         Driver driver = mapper.convertValue(driverDTO, Driver.class);
         driver.setName("ForUpdate");
         when(driverRepository.findByEmailAndStatus(anyString(), any(Status.class))).thenReturn(Optional.of(driver));
-        when(driverRepository.save(any(Driver.class))).thenReturn(new Driver());
+        when(driverRepository.save(any(Driver.class))).thenAnswer(i -> i.getArguments()[0]);
         DriverDTO result = driverServiceImpl.update(driverDTO);
         assertEquals(result.getName(), driverDTO.getName());
     }
@@ -87,7 +85,6 @@ public class DriverServiceImplementationTest {
         driver.setEmail("11@11.ru");
         when(driverRepository.findByEmailAndStatus(anyString(), any(Status.class))).thenReturn(Optional.of(driver));
         when(driverRepository.save(any(Driver.class))).thenReturn(driver);
-        //verify(driverRepository, times(1)).save(driver);
         driverServiceImpl.delete("11@11.ru");
     }
 
