@@ -1,0 +1,71 @@
+create table drivers
+(
+    id           bigserial
+        primary key,
+    created_at   timestamp default CURRENT_TIMESTAMP,
+    email        varchar(255),
+    name         varchar(255),
+    prev_record  bigint,
+    record_state varchar(255),
+    surname      varchar(255),
+    updated_at   timestamp
+);
+
+
+create table messages
+(
+    id        bigserial
+        primary key,
+    date      timestamp default CURRENT_TIMESTAMP,
+    sent_from varchar(255),
+    sent_to   varchar(255),
+    status    boolean   default false,
+    text      varchar(255)
+);
+
+
+create table service_record
+(
+    id         bigserial
+        primary key,
+    date       timestamp,
+    odometer   integer,
+    operations varchar(255),
+    vehicle_id bigint
+);
+
+create table vehicle_type
+(
+    id           bigserial
+        primary key,
+    manufacturer integer,
+    model        varchar(255)
+);
+
+
+create table vehicles
+(
+    id              bigserial
+        primary key,
+    created_at      timestamp default CURRENT_TIMESTAMP,
+    updated_at      timestamp,
+    vehicle_class   varchar(255),
+    vin             varchar(255)
+        constraint uk_6brka0b8j7n06xd43x37hlvlt
+            unique,
+    vehicle_type_id bigint
+        constraint fk3me608rujq9j8ptwd7fvaij1l
+            references vehicle_type
+);
+
+create table drivers_vehicle_list
+(
+    driver_id       bigint not null
+        constraint fkkqs7rrq88l39exh0shk3oc96i
+            references drivers,
+    vehicle_list_id bigint not null
+        constraint uk_emauf59clhy664n5n966urqdt
+            unique
+        constraint fk3vfk25myfx3cd5qarnyudlm19
+            references vehicles
+);

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/service")
+@RequestMapping("/servicerecords")
 @RequiredArgsConstructor
 @Tag(name = "Сервисные Записи")
 public class ServiceRecordConroller {

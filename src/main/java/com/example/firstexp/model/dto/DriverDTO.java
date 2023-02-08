@@ -1,7 +1,6 @@
 package com.example.firstexp.model.dto;
 
 
-import com.example.firstexp.model.entity.Vehicle;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +12,7 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DriverDTO {
-    List<Vehicle> vehicleList;
+    List<VehicleDTO> vehicleList;
     String name;
     String surname;
     String email;

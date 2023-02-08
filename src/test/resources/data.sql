@@ -1,0 +1,5 @@
+insert into drivers (id, created_at, email, name, prev_record, record_state, surname, updated_at) values  (1, '2023-01-30 03:01:24.378948', '123@123.ru', 'Ivan', null, 'A', 'Ivanov', null);
+insert into vehicle_type (id, manufacturer, model) values  (1, 3, 'FOCUS1'),(2, 3, 'FOCUS2');
+insert into vehicles (id, created_at, updated_at, vehicle_class, vin, vehicle_type_id) values  (1, '2023-01-30 03:01:26.723013', null, 'A', '1231233', 1), (2, '2023-01-30 03:01:33.249064', null, 'B', '123123', 1), (3, '2023-02-07 21:24:59.696399', null, 'A', '12312345', 1), (4, '2023-02-07 21:25:46.380335', null, 'A', '1231234567', 2);
+insert into drivers_vehicle_list (driver_id, vehicle_list_id) values  (1, 2);
+insert into service_record (id, date, odometer, operations, vehicle_id) values  (3, '2023-01-22 21:10:23.254000', 30000, 'Oil change', 2), (4, '2023-01-22 21:10:23.254000', 30000, 'Oil change', 2);

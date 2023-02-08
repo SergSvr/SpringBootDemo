@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/vehicle")
+@RequestMapping("/vehicles")
 @RequiredArgsConstructor
 @Tag(name="Транспортные средства")
 public class VehicleController {
