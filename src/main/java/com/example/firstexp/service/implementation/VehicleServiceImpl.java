@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -37,7 +39,7 @@ public class VehicleServiceImpl implements VehicleService {
         );
         Vehicle vehicle = mapper.convertValue(vehicleDTO, Vehicle.class);
         VehicleType temp = vehicleTypeRepository.findVehicleTypeByManufacturerAndModel(vehicleDTO.getVehicleType().getManufacturer(), vehicleDTO.getVehicleType().getModel())
-                .orElse(vehicleDTO.getVehicleType());
+                .orElse(mapper.convertValue(vehicleDTO.getVehicleType(), VehicleType.class));
         vehicle.setVehicleType(temp);
         vehicleTypeRepository.save(temp);
         Vehicle save = vehicleRepository.save(vehicle);
@@ -47,7 +49,9 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public VehicleDTO update(VehicleDTO vehicleDTO) {
         Vehicle vehicle = getVehicle(vehicleDTO.getVin());
-        vehicle.setVehicleType(vehicleDTO.getVehicleType());
+        VehicleType temp = vehicleTypeRepository.findVehicleTypeByManufacturerAndModel(vehicleDTO.getVehicleType().getManufacturer(), vehicleDTO.getVehicleType().getModel())
+                .orElse(mapper.convertValue(vehicleDTO.getVehicleType(), VehicleType.class));
+        vehicle.setVehicleType(temp);
         vehicle.setVehicleClass(vehicleDTO.getVehicleClass());
         vehicle.setUpdatedAt(LocalDateTime.now());
         vehicleTypeRepository.save(vehicle.getVehicleType());
@@ -55,18 +59,15 @@ public class VehicleServiceImpl implements VehicleService {
         return mapper.convertValue(vehicle, VehicleDTO.class);
     }
 
-    @Override
-    public VehicleDTO get(String vin) {
-        return mapper.convertValue(getVehicle(vin), VehicleDTO.class);
-    }
 
     @Override
     public void delete(String vin) {
         Vehicle vehicle = getVehicle(vin);
-        Driver driver = driverRepository.findByVehicleListContaining(vehicle).
-                orElseThrow(() -> new CustomException("Водитель для авто не найден", HttpStatus.NOT_FOUND));
-        driver.getVehicleList().remove(vehicle);
-        driverRepository.save(driver);
+        Optional<Driver> driver = driverRepository.findByVehicleListContaining(vehicle);
+        driver.ifPresent(theDriver -> {
+            theDriver.getVehicleList().remove(vehicle);
+            driverRepository.save(theDriver);
+        });
         vehicleRepository.delete(vehicle);
     }
 
@@ -75,6 +76,20 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicleRepository.
                 findByVin(vin).
                 orElseThrow(() -> new CustomException("Авто с данным VIN не найден", HttpStatus.NOT_FOUND));
+    }
+
+    @Override
+    public VehicleDTO get(String vin) {
+        Vehicle vehicle = getVehicle(vin);
+        VehicleDTO vehicleDTO = mapper.convertValue(vehicle, VehicleDTO.class);
+        vehicleDTO.setServiceRecord(vehicleDTO.getServiceRecord()
+                .stream()
+                .map(serviceRecordDTO -> {
+                    serviceRecordDTO.setVin(vin);
+                    return serviceRecordDTO;
+                })
+                .collect(Collectors.toList()));
+        return vehicleDTO;
     }
 
     @Override

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/service")
+@RequestMapping("/servicerecords")
 @RequiredArgsConstructor
 @Tag(name = "Сервисные Записи")
 public class ServiceRecordConroller {
@@ -48,7 +48,7 @@ public class ServiceRecordConroller {
                                                @RequestParam(required = false, defaultValue = "10") Integer perPage,
                                                @RequestParam(required = false, defaultValue = "name") String sort,
                                                @RequestParam(required = false, defaultValue = "ASC") Sort.Direction order) {
-        return servRecService.getRecordsPaged(vin, page, perPage,sort,order).getContent();
+        return servRecService.getRecordsPaged(vin, page, perPage, sort, order).getContent();
     }
 
     @DeleteMapping
