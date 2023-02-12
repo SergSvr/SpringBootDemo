@@ -4,6 +4,11 @@ import com.example.firstexp.exceptions.CustomException;
 import com.example.firstexp.model.dto.DriverDTO;
 import com.example.firstexp.model.entity.Driver;
 import com.example.firstexp.model.enums.Status;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import com.example.firstexp.model.repository.DriverRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -12,12 +17,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.ui.ModelMap;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -98,5 +105,31 @@ public class DriverServiceImplementationTest {
     public void getDriverEx() {
         when(driverRepository.findByEmailAndStatus(anyString(), any(Status.class))).thenReturn(Optional.empty());
         driverServiceImpl.getDriver("123");
+    }
+
+    @Test
+    public void getDriversPaged() {
+        Integer page=0;
+        Integer perPage=3;
+        String sort="id";
+        Sort.Direction order= Sort.Direction.DESC;
+        Driver[] drivers=new Driver[11];
+        List<Driver> drivers1 = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            drivers[i]=new Driver();
+            drivers[i].setName("Ivan"+i);
+            drivers[i].setEmail("123@123.r"+i);
+            drivers[i].setId((long) i+1);
+            drivers[i].setSurname("Ivanov"+i);
+            drivers[i].setStatus(Status.A);
+            drivers1.add(drivers[i]);
+        }
+       Page<Driver> driverPage = new PageImpl<>(drivers1);
+        when(driverRepository.findByStatus(any(Status.class),any(Pageable.class))).thenReturn(driverPage);
+        ModelMap map =driverServiceImpl.getDriversPaged(page,perPage,sort,order);
+        assertEquals(map.getAttribute("pageNumber"),page);
+        @SuppressWarnings("unchecked") List<DriverDTO> drivers2=(List<DriverDTO>) map.get("content");
+        System.out.println(drivers2);
+        assertEquals(drivers1.get(1).getSurname(),drivers2.get(1).getSurname());
     }
 }

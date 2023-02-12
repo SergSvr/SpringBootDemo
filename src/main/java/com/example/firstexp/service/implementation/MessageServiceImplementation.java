@@ -55,6 +55,7 @@ public class MessageServiceImplementation implements MessageService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public ModelMap getMessagesPaged(String mail, String folder, Integer page, Integer perPage, String sort, Sort.Direction order) {
         Pageable pageRequest = PaginationUtil.getPageRequest(page, perPage, sort, order);
         Page<Message> pageResult;

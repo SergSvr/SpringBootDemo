@@ -94,7 +94,8 @@ public class DriverServiceImplementation implements DriverService {
         Pageable pageRequest = PaginationUtil.getPageRequest(page, perPage, sort, order);
         Page<Driver> pageResult;
         pageResult = driverRepository.findByStatus(Status.A, pageRequest);
-        List<DriverDTO> content = pageResult.getContent().stream()
+        List<DriverDTO> content = pageResult.getContent()
+                .stream()
                 .map(driver -> mapper.convertValue(driver, DriverDTO.class))
                 .collect(Collectors.toList());
 
