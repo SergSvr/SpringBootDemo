@@ -75,7 +75,7 @@ public class MessageServiceImplementation implements MessageService {
         map.addAttribute("content", result.getPageList());
         map.addAttribute("pageNumber", page);
         map.addAttribute("pageSize", result.getPageSize());
-        map.addAttribute("totalPages", pageRequest.getPageNumber());
+        map.addAttribute("totalPages", pageResult.getTotalPages());
         return map;
     }
 

@@ -6,14 +6,22 @@ import com.example.firstexp.model.entity.Driver;
 import com.example.firstexp.model.enums.Status;
 import com.example.firstexp.model.repository.DriverRepository;
 import com.example.firstexp.service.DriverService;
+import com.example.firstexp.utils.PaginationUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
 import javax.mail.internet.InternetAddress;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -79,5 +87,25 @@ public class DriverServiceImplementation implements DriverService {
         return driverRepository.
                 findByEmailAndStatus(email, Status.A).
                 orElseThrow(() -> new CustomException("Водитель с таким email не найден", HttpStatus.NOT_FOUND));
+    }
+
+    @Override
+    public ModelMap getDriversPaged(Integer page, Integer perPage, String sort, Sort.Direction order) {
+        Pageable pageRequest = PaginationUtil.getPageRequest(page, perPage, sort, order);
+        Page<Driver> pageResult;
+        pageResult = driverRepository.findByStatus(Status.A, pageRequest);
+        List<DriverDTO> content = pageResult.getContent().stream()
+                .map(driver -> mapper.convertValue(driver, DriverDTO.class))
+                .collect(Collectors.toList());
+
+        PagedListHolder<DriverDTO> result = new PagedListHolder<>(content);
+        result.setPage(page);
+        result.setPageSize(perPage);
+        ModelMap map = new ModelMap();
+        map.addAttribute("content", result.getPageList());
+        map.addAttribute("pageNumber", page);
+        map.addAttribute("pageSize", result.getPageSize());
+        map.addAttribute("totalPages", pageResult.getTotalPages());
+        return map;
     }
 }
